@@ -2,41 +2,58 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.IO;
 
 public class SimpleRecorder : MonoBehaviour
 {
+    [Header("UI 연결")]
     public Button recordButton;
     public TextMeshProUGUI timerText;
-    public Image fadeImage;
+    public TextMeshProUGUI instructionText;
 
-    public int recordSeconds = 60; // 1분
+    [Header("페이드 컨트롤러")]
+    public FadeController fadeController;
+
+    [Header("녹음 시간 (초)")]
+    public int recordSeconds = 60;
+
     private AudioClip recordedClip;
     private bool isRecording = false;
 
     private void Start()
     {
-        recordButton.onClick.AddListener(StartRecording);
+        if (recordButton != null)
+        {
+            recordButton.onClick.AddListener(OnClickRecordButton);
+        }
+
         UpdateTimerText(recordSeconds);
-        SetFade(0f);
     }
 
-    void StartRecording()
+    void OnClickRecordButton()
     {
+        Debug.Log("Record button clicked");  // ← 이 줄 추가
+        
         if (isRecording) return;
 
         if (Microphone.devices.Length == 0)
         {
             Debug.LogError("No microphone detected!");
+            if (instructionText != null)
+                instructionText.text = "마이크를 찾을 수 없습니다.";
             return;
         }
 
         isRecording = true;
         recordButton.interactable = false;
 
-        // 마이크 시작 (recordSeconds 길이 clip)
+        if (instructionText != null)
+            instructionText.text = "녹음 중입니다...";
+
+        // 마이크 시작
         recordedClip = Microphone.Start(null, false, recordSeconds, 44100);
 
-        // 타이머 코루틴 시작
+        // 타이머 시작
         StartCoroutine(RecordTimerCoroutine());
     }
 
@@ -51,22 +68,30 @@ public class SimpleRecorder : MonoBehaviour
             remaining--;
         }
 
-        // 타이머 0초 표시
         UpdateTimerText(0);
 
         // 녹음 종료
         Microphone.End(null);
         isRecording = false;
 
+        // 안내 문구 변경
+        if (instructionText != null)
+            instructionText.text = "녹음이 완료되었습니다.";
+
         // 파일 저장
         SaveRecording();
 
         // 페이드 아웃 시작
-        StartCoroutine(FadeOutCoroutine());
+        if (fadeController != null)
+        {
+            fadeController.StartFadeOut();
+        }
     }
 
     void UpdateTimerText(int seconds)
     {
+        if (timerText == null) return;
+
         int m = seconds / 60;
         int s = seconds % 60;
         timerText.text = $"{m:00}:{s:00}";
@@ -76,38 +101,20 @@ public class SimpleRecorder : MonoBehaviour
     {
         if (recordedClip == null)
         {
-            Debug.LogError("No recorded clip to save!");
+            Debug.LogError("SimpleRecorder: recordedClip is null, cannot save.");
             return;
         }
 
-        // 저장 경로 (테스트용)
-        string filePath = System.IO.Path.Combine(
-            Application.persistentDataPath,
-            "user_recording.wav"
-        );
+        // 저장 경로: 앱의 persistentDataPath 내부
+        string folder = Path.Combine(Application.persistentDataPath, "Recordings");
+        Directory.CreateDirectory(folder);
 
-        // TODO: 외부에서 가져온 WavUtility 사용
-        // WavUtility.Save(filePath, recordedClip);
-        Debug.Log("Saved recording to: " + filePath);
-    }
+        string fileName = $"recording_{System.DateTime.Now:yyyyMMdd_HHmmss}.wav";
+        string filePath = Path.Combine(folder, fileName);
 
-    IEnumerator FadeOutCoroutine()
-    {
-        float duration = 2f;
-        float t = 0f;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            float normalized = Mathf.Clamp01(t / duration);
-            SetFade(normalized);
-            yield return null;
-        }
-    }
+        WavUtility.Save(filePath, recordedClip);
 
-    void SetFade(float alpha)
-    {
-        var color = fadeImage.color;
-        color.a = alpha;
-        fadeImage.color = color;
+        if (instructionText != null)
+            instructionText.text += $"\n저장 위치: {filePath}";
     }
 }
