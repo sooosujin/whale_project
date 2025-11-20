@@ -22,18 +22,20 @@ public class SimpleRecorder : MonoBehaviour
 
     private void Start()
     {
+
         if (recordButton != null)
         {
+            Debug.Log("[SimpleRecorder] Start() 호출됨");
             recordButton.onClick.AddListener(OnClickRecordButton);
         }
 
         UpdateTimerText(recordSeconds);
     }
 
-    void OnClickRecordButton()
+    public void OnClickRecordButton()
     {
-        Debug.Log("Record button clicked");  // ← 이 줄 추가
-        
+        Debug.Log("[SimpleRecorder] OnClickRecordButton 호출됨"); // 로그 추후 지우기
+
         if (isRecording) return;
 
         if (Microphone.devices.Length == 0)
