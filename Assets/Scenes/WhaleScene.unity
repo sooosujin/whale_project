@@ -250,6 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 411151745}
   - component: {fileID: 411151744}
+  - component: {fileID: 411151747}
   - component: {fileID: 411151743}
   - component: {fileID: 411151746}
   m_Layer: 0
@@ -326,8 +327,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 411151742}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -377,6 +378,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &411151747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411151742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a61ef2b1ccb4a9b448a685c0e783e877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whale: {fileID: 746958583}
+  offset: {x: 0, y: 2, z: -8}
 --- !u!1 &424791248
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,7 +453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f28590d0c229c044a26c5942f4d3af1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f28590d0c229c044a26c5942f4d3af1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -510,6 +525,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &746958583 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1f28590d0c229c044a26c5942f4d3af1, type: 3}
+  m_PrefabInstance: {fileID: 746958580}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &746958584
 MonoBehaviour:
   m_ObjectHideFlags: 0
