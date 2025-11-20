@@ -10,14 +10,14 @@ public class FadeController : MonoBehaviour
     [Header("페이드 아웃에 걸리는 시간 (초)")]
     public float fadeDuration = 2f;
 
-    private void Awake()
-    {
-        if (fadeImage != null)
-        {
-            // 시작할 때는 항상 투명
-            SetAlpha(0f);
-        }
-    }
+    // private void Awake()
+    // {
+    //     if (fadeImage != null)
+    //     {
+    //         // 시작할 때는 항상 투명
+    //         SetAlpha(0f);
+    //     }
+    // }
 
     public void StartFadeOut()
     {
@@ -30,25 +30,34 @@ public class FadeController : MonoBehaviour
         StartCoroutine(FadeOutCoroutine());
     }
 
+    // 🔥 Coroutine을 직접 반환하는 버전 (SimpleRecorder에서 yield return 으로 쓰기 위함)
+    public IEnumerator StartFadeOutCoroutine()
+    {
+        yield return StartCoroutine(FadeOutCoroutine());
+    }
+
+    // 🔥 실제 페이드 아웃 코루틴
     private IEnumerator FadeOutCoroutine()
     {
-        float t = 0f;
+        float elapsed = 0f;
+        Color c = fadeImage.color;
+        c.a = 0f;
+        fadeImage.color = c;
 
-        while (t < fadeDuration)
+        // 0 → 1까지 천천히 알파 올리기
+        while (elapsed < fadeDuration)
         {
-            t += Time.deltaTime;
-            float a = Mathf.Clamp01(t / fadeDuration);
-            SetAlpha(a);
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
+
+            c.a = t;
+            fadeImage.color = c;
+
             yield return null;
         }
 
-        SetAlpha(1f);
-    }
-
-    private void SetAlpha(float alpha)
-    {
-        Color c = fadeImage.color;
-        c.a = alpha;
+        // 최종적으로 완전히 검게
+        c.a = 1f;
         fadeImage.color = c;
     }
 }

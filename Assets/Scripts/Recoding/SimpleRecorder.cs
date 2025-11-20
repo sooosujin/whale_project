@@ -170,8 +170,8 @@ public class SimpleRecorder : MonoBehaviour
         //     remaining--;
         // }
 
-        // UpdateTimerText(0);
-        // Debug.Log("[SimpleRecorder] 타이머 종료, 0초 도달");
+        UpdateTimerText(0);
+        Debug.Log("[SimpleRecorder] 타이머 종료, 0초 도달");
 
         // // 녹음 종료
         // Microphone.End(null);
@@ -181,14 +181,14 @@ public class SimpleRecorder : MonoBehaviour
         // if (instructionText != null)
         //     instructionText.text = "녹음이 완료되었습니다.";
 
-        // // 파일 저장
-        // SaveRecording();
+        // 파일 저장
+        SaveRecording();
 
-        // // 페이드 아웃 시작
-        // if (fadeController != null)
-        // {
-        //     fadeController.StartFadeOut();
-        // }
+        // 페이드 아웃 시작
+        if (fadeController != null)
+        {
+            yield return fadeController.StartFadeOutCoroutine();
+        }
     }
 
     void UpdateTimerText(int seconds)
@@ -202,22 +202,32 @@ public class SimpleRecorder : MonoBehaviour
 
     void SaveRecording()
     {
-        if (recordedClip == null)
-        {
-            Debug.LogError("SimpleRecorder: recordedClip is null, cannot save.");
-            return;
-        }
 
-        // 저장 경로: 앱의 persistentDataPath 내부
         string folder = Path.Combine(Application.persistentDataPath, "Recordings");
         Directory.CreateDirectory(folder);
 
-        string fileName = $"recording_{System.DateTime.Now:yyyyMMdd_HHmmss}.wav";
+        string fileName = $"recording_dummy_{System.DateTime.Now:yyyyMMdd_HHmmss}.txt";
         string filePath = Path.Combine(folder, fileName);
 
-        WavUtility.Save(filePath, recordedClip);
+        File.WriteAllText(filePath, "dummy recording (no mic available)");
 
-        if (instructionText != null)
-            instructionText.text += $"\n저장 위치: {filePath}";
+        Debug.Log("[SimpleRecorder] 더미 녹음 파일 생성됨: " + filePath);
+        //     if (recordedClip == null)
+        //     {
+        //         Debug.LogError("SimpleRecorder: recordedClip is null, cannot save.");
+        //         return;
+        //     }
+
+        //     // 저장 경로: 앱의 persistentDataPath 내부
+        //     string folder = Path.Combine(Application.persistentDataPath, "Recordings");
+        //     Directory.CreateDirectory(folder);
+
+        //     string fileName = $"recording_{System.DateTime.Now:yyyyMMdd_HHmmss}.wav";
+        //     string filePath = Path.Combine(folder, fileName);
+
+        //     WavUtility.Save(filePath, recordedClip);
+
+        //     if (instructionText != null)
+        //         instructionText.text += $"\n저장 위치: {filePath}";
     }
 }
